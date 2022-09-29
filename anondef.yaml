@@ -1,10 +1,32 @@
 user.id:
+  anonymize: username # detect format email/microsoft/unix
+recipient.address:
   anonymize: email
+sender.address:
+  anonymize: email
+organization.id:
+  anonymize: organization 
 client.ip:
   anonymize: ip
+source.ip:
+  anonymize: ip
+destination.ip:
+  anonymize: ip
+o365.audit.UserKey:
+  anonymize: hash
+o365.audit.ObjectId:
+  anonymize: hash
+o365.message.subject:
+  anonymize: hash  # or drop
 o365.audit.SourceFileName:
   anonymize: filepath
+tenant:
+  anonymize: hash
+_s:
+  anonymize: drop
 _prevlmio_id:
+  anonymize: drop
+lmio_id:
   anonymize: drop
 log.original:
   anonymize: drop
