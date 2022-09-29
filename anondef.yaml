@@ -1,0 +1,10 @@
+user.id:
+  anonymize: email
+client.ip:
+  anonymize: ip
+o365.audit.SourceFileName:
+  anonymize: filepath
+_prevlmio_id:
+  anonymize: drop
+log.original:
+  anonymize: drop
