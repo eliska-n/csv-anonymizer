@@ -4,10 +4,7 @@ import re
 import hashlib
 import ipaddress
 import random
-
-
-INPUT_FILE = "./data/applogman_sample.csv"
-OUTPUT_FILE = "./data/anonymized_data.csv"
+import argparse
 
 
 def hash_sha256_to_chars(username, length):
@@ -94,23 +91,43 @@ def tranform_row(row, anondef):
 	return row
 
 
-def main():
-	with open("anondef.yaml", "rb") as f:
+def main(inp, out, anondef):
+	with open(anondef, "rb") as f:
 		anondef = yaml.safe_load(f)
 
-	anonym_file = open(OUTPUT_FILE, 'w')
-
-	with open(INPUT_FILE, "r") as f:
-		reader = csv.DictReader(f, delimiter=",")
+	with open(inp, "r") as fi, open(out, 'w') as fo:
+		reader = csv.DictReader(fi, delimiter=",")
 		fieldnames = reader.fieldnames
-		writer = csv.DictWriter(anonym_file, fieldnames=fieldnames)
+		writer = csv.DictWriter(fo, fieldnames=fieldnames)
 		writer.writeheader()
 		for row in reader:
 			new_row = tranform_row(row, anondef)
 			writer.writerow(new_row)
 
-	anonym_file.close()
-
 
 if __name__ == "__main__":
-	main()
+	parser = argparse.ArgumentParser(
+		description='Anonymize CSV.',
+		epilog="Created by Eliska Novotna & Ales Teska."
+	)
+
+	parser.add_argument(
+		'--input', dest='INPUT', action='store',
+		default="./data/applogman_sample.csv",
+		help="Specifies the input file (default: './data/applogman_sample.csv')"
+	)
+
+	parser.add_argument(
+		'--output', dest='OUTPUT', action='store',
+		default="./data/anonymized_data.csv",
+		help="Specifies the input file (default: './data/anonymized_data.csv')"
+	)
+
+	parser.add_argument(
+		'--def', dest='ANONDEF', action='store',
+		default="./anondef.yaml",
+		help="Specifies the YAML file with definition of anonymization (default: './anondef.yaml')"
+	)
+
+	args = parser.parse_args()
+	main(inp=args.INPUT, out=args.OUTPUT, anondef=args.ANONDEF)
