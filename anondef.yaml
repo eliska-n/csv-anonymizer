@@ -5,7 +5,7 @@ recipient.address:
 sender.address:
   anonymize: email
 organization.id:
-  anonymize: organization 
+  anonymize: hash
 client.ip:
   anonymize: ip
 source.ip:

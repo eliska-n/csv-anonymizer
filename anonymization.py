@@ -7,18 +7,17 @@ import random
 import argparse
 
 
-def hash_sha256_to_chars(username, length):
-	hashed = hashlib.sha256(username.encode("utf-8")).hexdigest()
+def hash_sha256_to_chars(col, length=10):
+	hashed = hashlib.sha256(col.encode("utf-8")).hexdigest()
 	return hashed[:length]
 	# TODO: vyměnit hexdigest za hezky pismenka
 
 
-def anonymize_username(username):
-	return hash_sha256_to_chars(username, 10)
-
-
-def anonymize_domain(domain):
-	return hash_sha256_to_chars(domain, 7)
+def anonymize_username(col):
+	email = anonymize_email(col)
+	if email == "not email":
+		return hash_sha256_to_chars(col)
+	return email
 
 
 def anonymize_email(col):
@@ -27,8 +26,8 @@ def anonymize_email(col):
 	regex_result = re.match(r"^(.*)@(.*)(\..*)$", col)
 	if regex_result is None:
 		return "not email"
-	username = anonymize_username(regex_result.group(1))
-	domain = anonymize_domain(regex_result.group(2))
+	username = hash_sha256_to_chars(regex_result.group(1))
+	domain = hash_sha256_to_chars(regex_result.group(2))
 
 	return "{}@{}{}".format(username, domain, regex_result.group(3))
 
@@ -80,6 +79,12 @@ def tranform_row(row, anondef):
 		elif fnctname == "filepath":
 			col = anonymize_filepath(col)
 
+		elif fnctname == "username":
+			col = anonymize_username(col)
+
+		elif fnctname == "hash":
+			col = hash_sha256_to_chars(col)
+
 		elif fnctname == "drop":
 			col = None
 		else:
@@ -97,7 +102,10 @@ def main(inp, out, anondef):
 
 	with open(inp, "r") as fi, open(out, 'w') as fo:
 		reader = csv.DictReader(fi, delimiter=",")
-		fieldnames = reader.fieldnames
+		fieldnames = list(reader.fieldnames)
+		for colname, coldef in anondef.items():
+			if coldef.get('anonymize', 'drop') == "drop":
+				fieldnames.remove(colname)
 		writer = csv.DictWriter(fo, fieldnames=fieldnames)
 		writer.writeheader()
 		for row in reader:
