@@ -1,4 +1,5 @@
 import yaml
+import base64
 import csv
 import re
 import hashlib
@@ -7,10 +8,12 @@ import random
 import argparse
 
 
-def hash_sha256_to_chars(username, length):
-	hashed = hashlib.sha256(username.encode("utf-8")).hexdigest()
+def hash_sha256_to_chars(col, length):
+	hashed = base64.b64encode(
+		hashlib.sha256(col.encode("utf-8")).digest(),
+		altchars=b'.-'
+	)
 	return hashed[:length]
-	# TODO: vyměnit hexdigest za hezky pismenka
 
 
 def anonymize_username(username):
@@ -33,7 +36,6 @@ def anonymize_email(col):
 	return "{}@{}{}".format(username, domain, regex_result.group(3))
 
 
-
 def anonymize_ipv4(col):
 	try:
 		ip = ipaddress.ip_address(col)
@@ -45,7 +47,6 @@ def anonymize_ipv4(col):
 
 	else:
 		return "{}.{}.{}.{}".format(ip.packed[0], ip.packed[1], random.randint(0, 255), random.randint(0, 255))  # čtvrť vs. město - jak moc potřebuji data zašifrovat? bezpečnost vs. přesnost
-
 
 
 def anonymize_ip(col):
