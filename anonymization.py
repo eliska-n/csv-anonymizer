@@ -60,7 +60,12 @@ def anonymize_ip(col):
 def anonymize_filepath(col):
 	if len(col) == 0:
 		return ""
-	name, suffix = col.rsplit(".", 1)
+	res = col.rsplit(".", 1)
+	if len(res) == 2:
+		filepath = "{}.{}".format(hash_sha256_to_chars(res[0], length=20), res[1])
+	else:
+		filepath = hash_sha256_to_chars(col, length=20)
+	return filepath
 
 
 def tranform_row(row, anondef):

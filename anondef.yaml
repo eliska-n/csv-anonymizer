@@ -18,6 +18,10 @@ o365.audit.ObjectId:
   anonymize: hash
 o365.message.subject:
   anonymize: hash  # or drop
+o365.message.id:
+  anonymize: hash
+o365.audit.ItemName:
+  anonymize: hash
 o365.audit.SourceFileName:
   anonymize: filepath
 tenant:
