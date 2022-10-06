@@ -12,7 +12,7 @@ def hash_sha256_to_chars(col, length=None):
 	hashed = base64.b64encode(
 		hashlib.sha256(col.encode("utf-8")).digest(),
 		altchars=b'.-'
-	)
+	).decode("utf-8")
 	if length is not None:
 		return hashed[:length]
 	return hashed
@@ -21,7 +21,7 @@ def hash_sha256_to_chars(col, length=None):
 def anonymize_username(col):
 	email = anonymize_email(col)
 	if email == "not email":
-		return hash_sha256_to_chars(col)
+		return hash_sha256_to_chars(col, length=9)
 	return email
 
 
@@ -31,8 +31,8 @@ def anonymize_email(col):
 	regex_result = re.match(r"^(.*)@(.*)(\..*)$", col)
 	if regex_result is None:
 		return "not email"
-	username = hash_sha256_to_chars(regex_result.group(1))
-	domain = hash_sha256_to_chars(regex_result.group(2))
+	username = hash_sha256_to_chars(regex_result.group(1), length=9)
+	domain = hash_sha256_to_chars(regex_result.group(2), length=11)
 
 	return "{}@{}{}".format(username, domain, regex_result.group(3))
 
